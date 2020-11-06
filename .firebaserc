@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "mapas-a4b08": {
+      "hosting": {
+        "mapsApp": [
+          "mapas-a4b08"
+        ]
+      }
+    }
+  }
+}
