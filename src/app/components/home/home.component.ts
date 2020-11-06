@@ -5,8 +5,8 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 import { CreateMarkerComponent } from '../create-marker/create-marker.component';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
+import { AuthService } from '../../providers/auth.service';
 
-export interface Item { name: string; }
 
 @Component({
   selector: 'app-home',
@@ -23,9 +23,12 @@ export class HomeComponent implements OnInit {
 
   constructor( public snackBar: MatSnackBar,
                public dialog: MatDialog,
-               private afs: AngularFirestore ) {
+               private afs: AngularFirestore,
+               public auth: AuthService ) {
                 this.itemsCollection = this.afs.collection<Marcador>('marcadores');
-                this.marcadores = this.itemsCollection.valueChanges();
+                // this.marcadores = this.itemsCollection.valueChanges();
+                this.marcadores = this.afs.collection<Marcador>('marcadores', ref => ref.where('usuarioId', '==', this.auth.usuario.uid))
+                .valueChanges();
                }
 
   ngOnInit(): void {
@@ -33,7 +36,7 @@ export class HomeComponent implements OnInit {
 
   // tslint:disable-next-line: typedef
   addMarkerFB(marcador: Marcador) {
-    console.log(marcador);
+    // console.log(marcador);
     // this.itemsCollection.add(marcador);
     this.itemsCollection.doc(marcador.id).set(marcador);
   }
@@ -58,9 +61,9 @@ export class HomeComponent implements OnInit {
             marker.latitud = latitud;
             marker.longitud = longitud;
             marker.id = id;
+            marker.usuarioId = this.auth.usuario.uid;
 
             this.addMarkerFB(marker);
-
             this.snackBar.open('Marcador guardado', 'Cerrar', { duration: 2000 });
         }
     });

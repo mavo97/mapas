@@ -1,5 +1,6 @@
 export interface Marcador {
     latitud: number;
     longitud: number;
-    id?; string;
+    id?: string;
+    usuarioId: string;
 }

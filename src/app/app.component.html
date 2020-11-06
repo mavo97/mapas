@@ -1,10 +1,15 @@
 <p>
-  <mat-toolbar color="primary">
+  <mat-toolbar color="primary"> 
     <span>My map</span>
+    <span class="example-spacer" *ngIf="auth.usuario.uid"></span>
+    <button mat-button *ngIf="auth.usuario.uid" (click)="auth.logout()" >
+      Cerrar Sesión
+    </button>
   </mat-toolbar>
   
 </p>
 <div class="main-container">
-  <!-- <app-home></app-home> -->
-  <app-login></app-login>
+  <h4 *ngIf="auth.usuario.uid">Hola, <b>{{auth.usuario.nombre}}!!</b></h4>
+  <app-home *ngIf="auth.usuario.uid"></app-home>
+  <app-login *ngIf="!auth.usuario.uid"></app-login>
 </div>

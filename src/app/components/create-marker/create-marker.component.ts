@@ -12,7 +12,7 @@ export class CreateMarkerComponent implements OnInit {
 
   constructor(  public dialogRef: MatDialogRef<CreateMarkerComponent>,
                 @Inject(MAT_DIALOG_DATA) public data: any ) {
-                  console.log(data);
+                  // console.log(data);
                   this.marcador = { latitud: data.longitud, longitud: data.latitud  };
                  }
 

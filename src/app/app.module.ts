@@ -13,6 +13,8 @@ import {MatDialogModule} from '@angular/material/dialog';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatButtonModule} from '@angular/material/button';
+import {MatIconModule} from '@angular/material/icon';
+
 
 // mapa
 import { AgmCoreModule } from '@agm/core';
@@ -47,7 +49,8 @@ import { LoginComponent } from './components/login/login.component';
     MatDialogModule,
     MatSnackBarModule,
     MatFormFieldModule,
-    MatButtonModule
+    MatButtonModule,
+    MatIconModule
   ],
   providers: [],
   bootstrap: [AppComponent]
