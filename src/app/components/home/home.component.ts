@@ -5,8 +5,9 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 import { CreateMarkerComponent } from '../create-marker/create-marker.component';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { AuthService } from '../../providers/auth.service';
-
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Component({
   selector: 'app-home',
@@ -20,11 +21,14 @@ export class HomeComponent implements OnInit {
   latitud = 22.0018822;
   longitud = -99.0125398;
   selectedMarker;
+  insert1 = false;
+  insert2 = false;
 
   constructor( public snackBar: MatSnackBar,
                public dialog: MatDialog,
                private afs: AngularFirestore,
-               public auth: AuthService ) {
+               public auth: AuthService,
+               private http: HttpClient ) {
                 this.itemsCollection = this.afs.collection<Marcador>('marcadores');
                 // this.marcadores = this.itemsCollection.valueChanges();
                 this.marcadores = this.afs.collection<Marcador>('marcadores', ref => ref.where('usuarioId', '==', this.auth.usuario.uid))
@@ -39,6 +43,23 @@ export class HomeComponent implements OnInit {
     // console.log(marcador);
     // this.itemsCollection.add(marcador);
     this.itemsCollection.doc(marcador.id).set(marcador);
+    if ( this.itemsCollection.doc(marcador.id).set(marcador) ){
+      this.insert1 = true;
+    }
+  }
+
+  addMarker2(marcador: Marcador ){
+    const url = 'https://api-mssql.herokuapp.com/api/save-marker';
+    const body = `longitud=${marcador.longitud}&latitud=${marcador.latitud}`;
+    // const  headers = new  HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded');
+    const headers = new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded');
+
+    // const marker = JSON.stringify( { longitud: marcador.longitud, latitud: marcador.latitud } );
+
+    return this.http.post(url, body, { headers })
+      .pipe(
+        map( data => data)
+      )
   }
 
   // tslint:disable-next-line: typedef
@@ -62,9 +83,19 @@ export class HomeComponent implements OnInit {
             marker.longitud = longitud;
             marker.id = id;
             marker.usuarioId = this.auth.usuario.uid;
-
             this.addMarkerFB(marker);
-            this.snackBar.open('Marcador guardado', 'Cerrar', { duration: 2000 });
+            // this.addMarkerFB(marker);
+            this.addMarker2(marker).subscribe(
+               (data) => {
+                 this.insert2 = true;
+                 if ( this.insert1 && this.insert2 ){
+                  this.snackBar.open('Marcador guardado!', 'Cerrar', { duration: 2000 });
+                 }else{
+                  this.snackBar.open('Marcador no guardado!', 'Cerrar', { duration: 2000 });
+                 }
+               }, (error) => {
+                 console.log(error);
+               });
         }
     });
   }
@@ -73,4 +104,5 @@ export class HomeComponent implements OnInit {
     deleteMarker(marcador){
       this.itemsCollection.doc(marcador.id).delete();
   }
+
 }
